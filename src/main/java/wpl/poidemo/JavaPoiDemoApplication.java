@@ -6,6 +6,8 @@ import utils.excel.Excel_Init;
 import utils.excel.Excel_Producer;
 import utils.excel.fields.CellsGen;
 import utils.excel.fields.RowsGen;
+import utils.excel.styling.BordersGen;
+import utils.excel.styling.TitlesGen;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.List;
 public class JavaPoiDemoApplication {
 
     public static void main(String[] args) throws IOException {
+
+        int styleGeneratedRows = 0;
 
         /** VARIABLES **/
 
@@ -76,11 +80,18 @@ public class JavaPoiDemoApplication {
         Excel_Init excelInit = new Excel_Init();
         Workbook excelFile = excelInit.excelInitialization(sheetsNumber, sheetsNames);
 
-//        RowsGen rowsGen = new RowsGen();
-//        rowsGen.generateExcelRows(excelFile);
+        // TOP BORDERS
+        BordersGen bordersGen = new BordersGen();
+        bordersGen.addBorder("bottom", 0, excelFile, colsNumbersBySheet);
+        styleGeneratedRows += 1;
 
+        // TITLES FILLING
+        TitlesGen titlesGen = new TitlesGen();
+        titlesGen.fillTitles(rowsTitles, excelFile);
+
+        // ROWS / COLS GENERATION & CELLS FILLING
         CellsGen cellsGen = new CellsGen();
-        cellsGen.generateExcelCells(excelFile, rowsNumbersBySheet, colsNumbersBySheet);
+        cellsGen.generateExcelCells(excelFile, rowsNumbersBySheet, colsNumbersBySheet, styleGeneratedRows);
 
         /** TODO
         *  - Generate borders
@@ -91,6 +102,13 @@ public class JavaPoiDemoApplication {
         *  - Fill data
         *  - Generate style
         ********************/
+
+//        // COL WIDTH AUTO-FORMATING
+//        for (int sheetIndex = 0; sheetIndex < excelFile.getNumberOfSheets(); sheetIndex++) {
+//            for (int colIndex = 0; colIndex < colsNumbersBySheet.get(sheetIndex); colIndex++) {
+//                excelFile.getSheetAt(sheetIndex).autoSizeColumn(colIndex);
+//            }
+//        }
 
         // FILE PRODUCTION
         Excel_Producer excelProducer = new Excel_Producer();
