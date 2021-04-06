@@ -1,9 +1,6 @@
 package utils.excel.fields;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.util.List;
 
@@ -11,6 +8,10 @@ public class CellsGen {
 
     // Generate cells
     public Workbook generateExcelCells(Workbook currentWorkBook, List<Integer> rowsNumberBySheet, List<Integer> colsNumberBySheet, int generatedLines) {
+
+        CellStyle cellStyle = currentWorkBook.createCellStyle();
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
         int sheetNumbers = currentWorkBook.getNumberOfSheets();
 
@@ -28,9 +29,12 @@ public class CellsGen {
                     Cell cell = currentRow.createCell(colIndex);
                     cell.setCellValue(sheetIndex + "." + colIndex + "." + (currentRow.getRowNum() - generatedLines));
 
+                    cell.setCellStyle(cellStyle);
+
                 }
             }
-        };
+            currentSheet.setDefaultRowHeight((short) 420);
+        }
 
         return currentWorkBook;
     }

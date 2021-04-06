@@ -80,7 +80,7 @@ public class JavaPoiDemoApplication {
         Excel_Init excelInit = new Excel_Init();
         Workbook excelFile = excelInit.excelInitialization(sheetsNumber, sheetsNames);
 
-        // TOP BORDERS
+        // BORDERS  + TITLES STYLING
         BordersGen bordersGen = new BordersGen();
         bordersGen.addBorder("bottom", 0, excelFile, colsNumbersBySheet);
         styleGeneratedRows += 1;
@@ -89,7 +89,7 @@ public class JavaPoiDemoApplication {
         TitlesGen titlesGen = new TitlesGen();
         titlesGen.fillTitles(rowsTitles, excelFile);
 
-        // ROWS / COLS GENERATION & CELLS FILLING
+        // ROWS / COLS GENERATION & CELLS FILLING + INDIVIDUAL CELL STYLING
         CellsGen cellsGen = new CellsGen();
         cellsGen.generateExcelCells(excelFile, rowsNumbersBySheet, colsNumbersBySheet, styleGeneratedRows);
 
@@ -103,12 +103,6 @@ public class JavaPoiDemoApplication {
         *  - Generate style
         ********************/
 
-//        // COL WIDTH AUTO-FORMATING
-//        for (int sheetIndex = 0; sheetIndex < excelFile.getNumberOfSheets(); sheetIndex++) {
-//            for (int colIndex = 0; colIndex < colsNumbersBySheet.get(sheetIndex); colIndex++) {
-//                excelFile.getSheetAt(sheetIndex).autoSizeColumn(colIndex);
-//            }
-//        }
 
         // FILE PRODUCTION
         Excel_Producer excelProducer = new Excel_Producer();

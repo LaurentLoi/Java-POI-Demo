@@ -1,9 +1,6 @@
 package utils.excel.styling;
 
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.util.List;
 
@@ -14,6 +11,8 @@ public class BordersGen {
         BorderStyle borderStyle = BorderStyle.THICK;
         short borderColor = (short) 0;
         CellStyle style = currentWorkBook.createCellStyle();
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
 
         switch (direction) {
             case "top":
