@@ -4,6 +4,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import utils.excel.Excel_Init;
 import utils.excel.Excel_Producer;
+import utils.excel.fields.CellsGen;
+import utils.excel.fields.RowsGen;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,14 +68,23 @@ public class JavaPoiDemoApplication {
         /** END VARIABLES **/
 
 
+        long startTime = System.currentTimeMillis();
+
         /** PROCESS **/
 
         // FILE INITIALIZATION
         Excel_Init excelInit = new Excel_Init();
         Workbook excelFile = excelInit.excelInitialization(sheetsNumber, sheetsNames);
 
+//        RowsGen rowsGen = new RowsGen();
+//        rowsGen.generateExcelRows(excelFile);
+
+        CellsGen cellsGen = new CellsGen();
+        cellsGen.generateExcelCells(excelFile, rowsNumbersBySheet, colsNumbersBySheet);
+
         /** TODO
         *  - Generate borders
+         *      - for
         *  - Generate titles
         *  - Generate rows
         *  - Generate cells
@@ -86,6 +97,9 @@ public class JavaPoiDemoApplication {
         excelProducer.excelFileProduction(excelFile, fileName);
 
         /** END PROCESS **/
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("Excel file generated. It took " + (endTime - startTime) + " milliseconds.");
     }
 
 }
