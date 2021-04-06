@@ -35,3 +35,4 @@ build/
 ### CUSTOM PROJECT EXCLUDES ###
 /workbook.xls
 /src/main/java/utils/a.java
+/GeneratedExcelFile.xlsx
