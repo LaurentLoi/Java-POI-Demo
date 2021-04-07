@@ -1,13 +1,15 @@
 package utils.excel.fields;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CellsGen {
 
     // Generate cells
-    public Workbook generateExcelCells(Workbook currentWorkBook, List<Integer> rowsNumberBySheet, List<Integer> colsNumberBySheet, int generatedLines) {
+    public Workbook generateExcelCells(Workbook currentWorkBook, List<Integer> rowsNumberBySheet, List<Integer> colsNumberBySheet, int generatedLines, List<List<List<Integer>>> ratioChart) {
 
         CellStyle cellStyle = currentWorkBook.createCellStyle();
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -15,28 +17,90 @@ public class CellsGen {
 
         int sheetNumbers = currentWorkBook.getNumberOfSheets();
 
+        // SHEETS ITERATION
         for (int sheetIndex = 0; sheetIndex < sheetNumbers; sheetIndex++) {
 
             Sheet currentSheet = currentWorkBook.getSheetAt(sheetIndex);
-            System.out.println("Sheet index : " + sheetIndex);
+            List<List<Integer>> currentRatioList = ratioChart.get(sheetIndex);
 
-            for (int rowIndex = generatedLines; rowIndex < (rowsNumberBySheet.get(sheetIndex) + generatedLines); rowIndex++) { // ROWS ITERATION
 
-                Row currentRow = currentSheet.createRow(rowIndex);
+            List<Integer> totalCellCounter = new ArrayList<>();
+            for (int i = 0; i < colsNumberBySheet.get(sheetIndex); i++) {
+                totalCellCounter.add(i, 0);
+            }
 
-                for (int colIndex = 0; colIndex < colsNumberBySheet.get(sheetIndex); colIndex++) { // COL ITERATION
+            //RATIO LIST ITERATOR
+            for (int ratioListIndex = 0; ratioListIndex < currentRatioList.size(); ratioListIndex++) {
+                int cellCounter = 0;
+                List<Integer> currentRatio = currentRatioList.get(ratioListIndex);
+                System.out.println("Currently working on ratio list : " + ratioListIndex);
+                // COL ITERATOR
+                for (int colIndex = 0; colIndex < colsNumberBySheet.get(sheetIndex); colIndex++) {
 
-                    Cell cell = currentRow.createCell(colIndex);
-                    cell.setCellValue(sheetIndex + "." + colIndex + "." + (currentRow.getRowNum() - generatedLines));
+                    System.out.println("With COL : " + colIndex);
 
-                    cell.setCellStyle(cellStyle);
+                    int cellsNbrToInsert = cellsToInsertCounter(currentRatio, colIndex);
 
+                    for (int i = 0; i < cellsNbrToInsert; i++) {
+
+                        int cellIndex = cellCounter + generatedLines + totalCellCounter.get(colIndex);
+                        Row currentRow = currentSheet.getRow(cellIndex);
+                        Cell currentCell;
+
+                        // if first iteration → create row
+                        if (currentRow == null) {
+                            currentRow = currentSheet.createRow(cellIndex);
+                            currentCell = currentRow.createCell(colIndex);
+                        }
+
+                        currentCell = currentRow.createCell(colIndex);
+                        currentCell.setCellValue((sheetIndex) + "." + colIndex + "." + i + ".");
+
+                        // sets individual cell style
+                        currentCell.setCellStyle(cellStyle);
+
+                        if (colIndex != (colsNumberBySheet.get(sheetIndex) - 1)) {
+                            int mergeEndIndex = this.stackSplitter(currentRatio, colIndex);
+
+                            currentSheet.addMergedRegion(new CellRangeAddress(
+                                    cellIndex, //first row (0-based)
+                                    (cellIndex + mergeEndIndex) - 1, //last row  (0-based)
+                                    colIndex, //first column (0-based)
+                                    colIndex  //last column  (0-based)
+                            ));
+                            cellCounter += mergeEndIndex;
+                        } else {
+                            cellCounter += 1;
+                        }
+                    }
+                    totalCellCounter.set(colIndex, totalCellCounter.get(colIndex) + cellCounter);
+                    cellCounter = 0;
                 }
             }
+            // sets default height
             currentSheet.setDefaultRowHeight((short) 420);
         }
 
         return currentWorkBook;
+    }
+
+    private int cellsToInsertCounter(List<Integer> currentRatio, int colIndex) {
+        int counter = 1;
+        for (int i = 0; i <= colIndex; i++) {
+            counter *= currentRatio.get(i);
+        }
+        return counter;
+    }
+
+    private int stackSplitter(List<Integer> dataStack, int colIndex) {
+
+        // colIndex += 1; // from loop - adjust to array index
+        int currentStackSize = 1;
+
+        for (int i = colIndex + 1; i < dataStack.size(); i++) {
+            currentStackSize *= dataStack.get(i);
+        }
+        return currentStackSize;
     }
 
 }

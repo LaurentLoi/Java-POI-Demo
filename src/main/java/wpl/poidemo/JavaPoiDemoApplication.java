@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import utils.excel.Excel_Init;
 import utils.excel.Excel_Producer;
+import utils.excel.fields.CellsFiller;
 import utils.excel.fields.CellsGen;
 import utils.excel.fields.RowsGen;
 import utils.excel.styling.BordersGen;
@@ -39,17 +40,22 @@ public class JavaPoiDemoApplication {
 
         // RATIO TABLES SHEET 2
         List<List<Integer>> ratioSheet2 = new ArrayList<>();
-        ratioSheet1.add(Arrays.asList(1, 8, 9, 35));  // 2 520 lines
-        ratioSheet1.add(Arrays.asList(1, 6, 15, 80)); // 7 200 lines
+        ratioSheet2.add(Arrays.asList(1, 8, 9, 35));  // 2 520 lines
+        ratioSheet2.add(Arrays.asList(1, 6, 15, 80)); // 7 200 lines
         //                   TOTAL = 2, 14, 24, 115 -    9 720 lines
 
         // RATIO TABLES SHEET 3
         List<List<Integer>> ratioSheet3 = new ArrayList<>();
-        ratioSheet1.add(Arrays.asList(1, 3, 9, 12));  // 324 lines
-        ratioSheet1.add(Arrays.asList(1, 6, 6, 25));  // 900 lines
-        ratioSheet1.add(Arrays.asList(1, 7, 4, 17));  // 476 lines
-        ratioSheet1.add(Arrays.asList(1, 5, 8, 30)); // 1200 lines
+        ratioSheet3.add(Arrays.asList(1, 2, 4, 5));  // 324 lines
+        ratioSheet3.add(Arrays.asList(1, 2, 4, 5));  // 900 lines
+        ratioSheet3.add(Arrays.asList(1, 2, 4, 5));  // 476 lines
+        ratioSheet3.add(Arrays.asList(1, 2, 4, 5)); // 1200 lines
         //                   TOTAL = 4, 21, 27, 84 -   2 900 lines
+
+        List<List<List<Integer>>> ratioChart = new ArrayList<>(); //Arrays.asList(ratioSheet1, ratioSheet2, ratioSheet3);
+        ratioChart.add(ratioSheet1);
+        ratioChart.add(ratioSheet2);
+        ratioChart.add(ratioSheet3);
 
         // ROWS
         List<Integer> rowsNumbersBySheet = new ArrayList<>(); // number of rows by sheet
@@ -89,20 +95,13 @@ public class JavaPoiDemoApplication {
         TitlesGen titlesGen = new TitlesGen();
         titlesGen.fillTitles(rowsTitles, excelFile);
 
-        // ROWS / COLS GENERATION & CELLS FILLING + INDIVIDUAL CELL STYLING
+        // ROWS / COLS GENERATION / CELLS FILLING + INDIVIDUAL CELL STYLING
         CellsGen cellsGen = new CellsGen();
-        cellsGen.generateExcelCells(excelFile, rowsNumbersBySheet, colsNumbersBySheet, styleGeneratedRows);
+        cellsGen.generateExcelCells(excelFile, rowsNumbersBySheet, colsNumbersBySheet, styleGeneratedRows, ratioChart);
 
-        /** TODO
-        *  - Generate borders
-         *      - for
-        *  - Generate titles
-        *  - Generate rows
-        *  - Generate cells
-        *  - Fill data
-        *  - Generate style
-        ********************/
-
+        // CELLS FILLING
+//        CellsFiller cellsFiller = new CellsFiller();
+//        cellsFiller.fillCells(excelFile, rowsNumbersBySheet, colsNumbersBySheet, ratioChart, styleGeneratedRows);
 
         // FILE PRODUCTION
         Excel_Producer excelProducer = new Excel_Producer();
@@ -111,6 +110,15 @@ public class JavaPoiDemoApplication {
         /** END PROCESS **/
 
         long endTime = System.currentTimeMillis();
+        int totalColNumber = 0;
+        int totalCellsNumber = 0;
+        for (int i = 0; i < colsNumbersBySheet.size(); i++) {
+            totalColNumber += colsNumbersBySheet.get(i);
+        }
+        for (int i = 0; i < rowsNumbersBySheet.size(); i++) {
+            totalCellsNumber += rowsNumbersBySheet.get(i);
+        }
+        System.out.println(" - " + totalCellsNumber + " rows generated in " + totalColNumber + " cols, over " + sheetsNumber + " sheets.");
         System.out.println("Excel file generated. It took " + (endTime - startTime) + " milliseconds.");
     }
 
