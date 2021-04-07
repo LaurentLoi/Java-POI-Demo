@@ -19,13 +19,13 @@ public class CellsGen {
 
         // SHEETS ITERATION
         for (int sheetIndex = 0; sheetIndex < sheetNumbers; sheetIndex++) {
-
+            int maxColNumber = colsNumberBySheet.get(sheetIndex);
             Sheet currentSheet = currentWorkBook.getSheetAt(sheetIndex);
             List<List<Integer>> currentRatioList = ratioChart.get(sheetIndex);
 
 
             List<Integer> totalCellCounter = new ArrayList<>();
-            for (int i = 0; i < colsNumberBySheet.get(sheetIndex); i++) {
+            for (int i = 0; i < maxColNumber; i++) {
                 totalCellCounter.add(i, 0);
             }
 
@@ -33,17 +33,19 @@ public class CellsGen {
             for (int ratioListIndex = 0; ratioListIndex < currentRatioList.size(); ratioListIndex++) {
                 int cellCounter = 0;
                 List<Integer> currentRatio = currentRatioList.get(ratioListIndex);
-                System.out.println("Currently working on ratio list : " + ratioListIndex);
+                System.out.println("Currently working on sheet " + (sheetIndex + 1) + " with ratio list : " + (ratioListIndex + 1));
                 // COL ITERATOR
-                for (int colIndex = 0; colIndex < colsNumberBySheet.get(sheetIndex); colIndex++) {
+                for (int colIndex = 0; colIndex < maxColNumber; colIndex++) {
 
                     System.out.println("With COL : " + colIndex);
 
                     int cellsNbrToInsert = cellsToInsertCounter(currentRatio, colIndex);
+                    int currentTotalCellCounter = totalCellCounter.get(colIndex);
 
+                    long startTime = System.currentTimeMillis();
                     for (int i = 0; i < cellsNbrToInsert; i++) {
 
-                        int cellIndex = cellCounter + generatedLines + totalCellCounter.get(colIndex);
+                        int cellIndex = cellCounter + generatedLines + currentTotalCellCounter;
                         Row currentRow = currentSheet.getRow(cellIndex);
                         Cell currentCell;
 
@@ -59,7 +61,7 @@ public class CellsGen {
                         // sets individual cell style
                         currentCell.setCellStyle(cellStyle);
 
-                        if (colIndex != (colsNumberBySheet.get(sheetIndex) - 1)) {
+                        if (colIndex != (maxColNumber - 1)) {
                             int mergeEndIndex = this.stackSplitter(currentRatio, colIndex);
 
                             currentSheet.addMergedRegion(new CellRangeAddress(
@@ -75,12 +77,13 @@ public class CellsGen {
                     }
                     totalCellCounter.set(colIndex, totalCellCounter.get(colIndex) + cellCounter);
                     cellCounter = 0;
+                    long endTime = System.currentTimeMillis();
+                    System.out.println(cellsNbrToInsert + " cells inserted in " + (endTime - startTime) + " milliseconds");
                 }
             }
             // sets default height
             currentSheet.setDefaultRowHeight((short) 420);
         }
-
         return currentWorkBook;
     }
 
@@ -93,14 +96,10 @@ public class CellsGen {
     }
 
     private int stackSplitter(List<Integer> dataStack, int colIndex) {
-
-        // colIndex += 1; // from loop - adjust to array index
         int currentStackSize = 1;
-
         for (int i = colIndex + 1; i < dataStack.size(); i++) {
             currentStackSize *= dataStack.get(i);
         }
         return currentStackSize;
     }
-
 }

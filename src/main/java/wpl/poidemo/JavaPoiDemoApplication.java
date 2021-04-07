@@ -4,9 +4,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import utils.excel.Excel_Init;
 import utils.excel.Excel_Producer;
-import utils.excel.fields.CellsFiller;
 import utils.excel.fields.CellsGen;
-import utils.excel.fields.RowsGen;
 import utils.excel.styling.BordersGen;
 import utils.excel.styling.TitlesGen;
 
@@ -112,11 +110,11 @@ public class JavaPoiDemoApplication {
         long endTime = System.currentTimeMillis();
         int totalColNumber = 0;
         int totalCellsNumber = 0;
-        for (int i = 0; i < colsNumbersBySheet.size(); i++) {
-            totalColNumber += colsNumbersBySheet.get(i);
+        for (Integer integer : colsNumbersBySheet) {
+            totalColNumber += integer;
         }
-        for (int i = 0; i < rowsNumbersBySheet.size(); i++) {
-            totalCellsNumber += rowsNumbersBySheet.get(i);
+        for (Integer integer : rowsNumbersBySheet) {
+            totalCellsNumber += integer;
         }
         System.out.println(" - " + totalCellsNumber + " rows generated in " + totalColNumber + " cols, over " + sheetsNumber + " sheets.");
         System.out.println("Excel file generated. It took " + (endTime - startTime) + " milliseconds.");
