@@ -8,10 +8,13 @@ import java.util.List;
 
 public class CellsGen {
 
-    // Generate cells
-    public Workbook generateExcelCells(Workbook currentWorkBook, List<Integer> rowsNumberBySheet, List<Integer> colsNumberBySheet, int generatedLines, List<List<List<Integer>>> ratioChart) {
+    // GENERATE CELLS
+    public void generateExcelCells(Workbook currentWorkBook, List<Integer> colsNumberBySheet, int generatedLines, List<List<List<Integer>>> ratioChart) {
 
+        // CELL STYLE INIT
         CellStyle cellStyle = currentWorkBook.createCellStyle();
+
+        // VERTICAL / HORIZONTAL ALIGNMENT
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
         cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
@@ -30,16 +33,16 @@ public class CellsGen {
             }
 
             //RATIO LIST ITERATOR
-            for (int ratioListIndex = 0; ratioListIndex < currentRatioList.size(); ratioListIndex++) {
+            for (List<Integer> integers : currentRatioList) {
                 int cellCounter = 0;
-                List<Integer> currentRatio = currentRatioList.get(ratioListIndex);
-                System.out.println("Currently working on sheet " + (sheetIndex + 1) + " with ratio list : " + (ratioListIndex + 1));
+                //                System.out.println("Currently working on sheet " + (sheetIndex + 1) + " with ratio list : " + (ratioListIndex + 1));
+
                 // COL ITERATOR
                 for (int colIndex = 0; colIndex < maxColNumber; colIndex++) {
 
-                    System.out.println("With COL : " + colIndex);
+//                    System.out.println("With COL : " + colIndex);
 
-                    int cellsNbrToInsert = cellsToInsertCounter(currentRatio, colIndex);
+                    int cellsNbrToInsert = cellsToInsertCounter(integers, colIndex);
                     int currentTotalCellCounter = totalCellCounter.get(colIndex);
 
                     long startTime = System.currentTimeMillis();
@@ -49,26 +52,28 @@ public class CellsGen {
                         Row currentRow = currentSheet.getRow(cellIndex);
                         Cell currentCell;
 
-                        // if first iteration → create row
+                        // IF FIRST ITERATION → CREATE ROW
                         if (currentRow == null) {
                             currentRow = currentSheet.createRow(cellIndex);
-                            currentCell = currentRow.createCell(colIndex);
                         }
 
+                        // CREATE CELL
                         currentCell = currentRow.createCell(colIndex);
+                        // FILL CELL
                         currentCell.setCellValue((sheetIndex) + "." + colIndex + "." + i + ".");
 
-                        // sets individual cell style
+                        // SETS INDIVIDUAL CELL STYLE
                         currentCell.setCellStyle(cellStyle);
 
+                        // IF NOT LAST COL → MERGE CELLS
                         if (colIndex != (maxColNumber - 1)) {
-                            int mergeEndIndex = this.stackSplitter(currentRatio, colIndex);
+                            int mergeEndIndex = this.stackSplitter(integers, colIndex);
 
                             currentSheet.addMergedRegion(new CellRangeAddress(
-                                    cellIndex, //first row (0-based)
-                                    (cellIndex + mergeEndIndex) - 1, //last row  (0-based)
-                                    colIndex, //first column (0-based)
-                                    colIndex  //last column  (0-based)
+                                    cellIndex,
+                                    (cellIndex + mergeEndIndex) - 1,
+                                    colIndex,
+                                    colIndex
                             ));
                             cellCounter += mergeEndIndex;
                         } else {
@@ -78,13 +83,12 @@ public class CellsGen {
                     totalCellCounter.set(colIndex, totalCellCounter.get(colIndex) + cellCounter);
                     cellCounter = 0;
                     long endTime = System.currentTimeMillis();
-                    System.out.println(cellsNbrToInsert + " cells inserted in " + (endTime - startTime) + " milliseconds");
+                    // System.out.println(cellsNbrToInsert + " cells inserted in " + (endTime - startTime) + " milliseconds");
                 }
             }
-            // sets default height
+            // SETS SHEET DEFAULT ROW HEIGHT
             currentSheet.setDefaultRowHeight((short) 420);
         }
-        return currentWorkBook;
     }
 
     private int cellsToInsertCounter(List<Integer> currentRatio, int colIndex) {

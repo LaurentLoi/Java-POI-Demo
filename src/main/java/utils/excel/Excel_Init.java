@@ -8,17 +8,16 @@ import java.util.List;
 
 public class Excel_Init {
 
-    public Workbook excelInitialization(int sheetsNumber, List<String> sheetsNames) throws FileNotFoundException {
+    public Workbook excelInitialization(int sheetsNumber, List<String> sheetsNames) {
 
-        // Init file
+        // INIT FILE
         Workbook excelFile = new XSSFWorkbook();
 
-        // init sheets
+        // INIT SHEETS
         for (int i = 0; i < sheetsNumber; i++) {
             excelFile.createSheet(sheetsNames.get(i));
         }
 
         return excelFile;
-
     }
 }

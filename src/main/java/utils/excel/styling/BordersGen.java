@@ -8,9 +8,14 @@ public class BordersGen {
 
     public void addBorder(String direction, int rowToBorder, Workbook currentWorkBook, List<Integer> colsBySheet) {
 
+        // BORDER STYLE INIT
         BorderStyle borderStyle = BorderStyle.THICK;
+        // BORDER COLOR INIT
         short borderColor = (short) 0;
+
+        // CELL STYLE INIT
         CellStyle style = currentWorkBook.createCellStyle();
+        // VERTICAL / HORIZONTAL ALIGNMENT
         style.setAlignment(HorizontalAlignment.CENTER);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
 
