@@ -35,12 +35,12 @@ public class CellsGen {
             //RATIO LIST ITERATOR
             for (List<Integer> integers : currentRatioList) {
                 int cellCounter = 0;
-                //                System.out.println("Currently working on sheet " + (sheetIndex + 1) + " with ratio list : " + (ratioListIndex + 1));
+                // System.out.println("Currently working on sheet " + (sheetIndex + 1) + " with ratio list : " + (ratioListIndex + 1));
 
                 // COL ITERATOR
                 for (int colIndex = 0; colIndex < maxColNumber; colIndex++) {
 
-//                    System.out.println("With COL : " + colIndex);
+                    // System.out.println("With COL : " + colIndex);
 
                     int cellsNbrToInsert = cellsToInsertCounter(integers, colIndex);
                     int currentTotalCellCounter = totalCellCounter.get(colIndex);
