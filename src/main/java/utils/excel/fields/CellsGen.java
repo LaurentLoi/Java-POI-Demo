@@ -9,7 +9,7 @@ import java.util.List;
 public class CellsGen {
 
     // GENERATE CELLS
-    public void generateExcelCells(Workbook currentWorkBook, List<Integer> colsNumberBySheet, int generatedLines, List<List<List<Integer>>> ratioChart) {
+    public void generateExcelCells(Workbook currentWorkBook, List<Integer> colsNumberBySheet, int generatedLines, List<List<List<Integer>>> treesList) {
 
         // CELL STYLE INIT
         CellStyle cellStyle = currentWorkBook.createCellStyle();
@@ -24,7 +24,7 @@ public class CellsGen {
         for (int sheetIndex = 0; sheetIndex < sheetNumbers; sheetIndex++) {
             int maxColNumber = colsNumberBySheet.get(sheetIndex);
             Sheet currentSheet = currentWorkBook.getSheetAt(sheetIndex);
-            List<List<Integer>> currentRatioList = ratioChart.get(sheetIndex);
+            List<List<Integer>> currentDataTree = treesList.get(sheetIndex);
 
 
             List<Integer> totalCellCounter = new ArrayList<>();
@@ -33,19 +33,15 @@ public class CellsGen {
             }
 
             //RATIO LIST ITERATOR
-            for (List<Integer> integers : currentRatioList) {
+            for (List<Integer> treeNode : currentDataTree) {
                 int cellCounter = 0;
-                // System.out.println("Currently working on sheet " + (sheetIndex + 1) + " with ratio list : " + (ratioListIndex + 1));
 
                 // COL ITERATOR
                 for (int colIndex = 0; colIndex < maxColNumber; colIndex++) {
 
-                    // System.out.println("With COL : " + colIndex);
-
-                    int cellsNbrToInsert = cellsToInsertCounter(integers, colIndex);
+                    int cellsNbrToInsert = cellsToInsertCounter(treeNode, colIndex);
                     int currentTotalCellCounter = totalCellCounter.get(colIndex);
 
-                    long startTime = System.currentTimeMillis();
                     for (int i = 0; i < cellsNbrToInsert; i++) {
 
                         int cellIndex = cellCounter + generatedLines + currentTotalCellCounter;
@@ -61,13 +57,12 @@ public class CellsGen {
                         currentCell = currentRow.createCell(colIndex);
                         // FILL CELL
                         currentCell.setCellValue((sheetIndex) + "." + colIndex + "." + i + ".");
-
                         // SETS INDIVIDUAL CELL STYLE
                         currentCell.setCellStyle(cellStyle);
 
                         // IF NOT LAST COL → MERGE CELLS
                         if (colIndex != (maxColNumber - 1)) {
-                            int mergeEndIndex = this.stackSplitter(integers, colIndex);
+                            int mergeEndIndex = this.stackSplitter(treeNode, colIndex);
 
                             currentSheet.addMergedRegion(new CellRangeAddress(
                                     cellIndex,
@@ -82,8 +77,6 @@ public class CellsGen {
                     }
                     totalCellCounter.set(colIndex, totalCellCounter.get(colIndex) + cellCounter);
                     cellCounter = 0;
-                    long endTime = System.currentTimeMillis();
-                    // System.out.println(cellsNbrToInsert + " cells inserted in " + (endTime - startTime) + " milliseconds");
                 }
             }
             // SETS SHEET DEFAULT ROW HEIGHT
