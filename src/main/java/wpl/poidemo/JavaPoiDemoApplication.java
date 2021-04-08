@@ -25,81 +25,52 @@ public class JavaPoiDemoApplication {
         // FILE NAME
         String fileName = "GeneratedExcelFile";
 
-        // RATIO TABLES SHEET 1
-        List<List<Integer>> ratioSheet1 = new ArrayList<>();
-        ratioSheet1.add(Arrays.asList(1, 2, 4, 5));
-        ratioSheet1.add(Arrays.asList(1, 2, 4, 5));
-        ratioSheet1.add(Arrays.asList(1, 2, 4, 5));
+        // DATA TREE SHEET 1
+        List<List<Integer>> dataTreeSheet01 = new ArrayList<>();
+        dataTreeSheet01.add(Arrays.asList(1, 2, 4, 5));
+        dataTreeSheet01.add(Arrays.asList(1, 2, 4, 5));
+        dataTreeSheet01.add(Arrays.asList(1, 2, 4, 5));
 
-//        // RATIO TABLES SHEET 2
-//        List<List<Integer>> ratioSheet2 = new ArrayList<>();
-//        ratioSheet2.add(Arrays.asList(1, 3, 2, 2, 1, 2, 2, 3, 2, 4, 3));
-//        ratioSheet2.add(Arrays.asList(1, 3, 2, 2, 1, 2, 2, 3, 2, 4, 3));
-//        ratioSheet2.add(Arrays.asList(1, 3, 2, 2, 1, 2, 2, 3, 2, 4, 3));
+//        // DATA TREE SHEET 2
+//        List<List<Integer>> dataTreeSheet02 = new ArrayList<>();
+//        dataTreeSheet02.add(Arrays.asList(1, 3, 2, 2, 1, 2, 2, 3, 2, 4, 3));
+//        dataTreeSheet02.add(Arrays.asList(1, 3, 2, 2, 1, 2, 2, 3, 2, 4, 3));
+//        dataTreeSheet02.add(Arrays.asList(1, 3, 2, 2, 1, 2, 2, 3, 2, 4, 3));
+//
+//
+//        // DATA TREE SHEET 3
+//        List<List<Integer>> dataTreeSheet03 = new ArrayList<>();
+//        dataTreeSheet03.add(Arrays.asList(1, 2, 4, 5));
+//        dataTreeSheet03.add(Arrays.asList(1, 2, 3, 5));
+//        dataTreeSheet03.add(Arrays.asList(1, 2, 4, 5));
+//        dataTreeSheet03.add(Arrays.asList(1, 2, 4, 6));
 
-
-//        // RATIO TABLES SHEET 3
-//        List<List<Integer>> ratioSheet3 = new ArrayList<>();
-//        ratioSheet3.add(Arrays.asList(1, 2, 4, 5));
-//        ratioSheet3.add(Arrays.asList(1, 2, 4, 5));
-//        ratioSheet3.add(Arrays.asList(1, 2, 4, 5));
-//        ratioSheet3.add(Arrays.asList(1, 2, 4, 5));
-
-        List<List<List<Integer>>> ratioChart = new ArrayList<>(); //Arrays.asList(ratioSheet1, ratioSheet2, ratioSheet3);
-        ratioChart.add(ratioSheet1);
-//        ratioChart.add(ratioSheet2);
-//        ratioChart.add(ratioSheet3);
+        // LIST OF ALL DATA TREES
+        List<List<List<Integer>>> treesList = new ArrayList<>();
+        treesList.add(dataTreeSheet01);
+//        treesList.add(dataTreeSheet02);
+//        treesList.add(dataTreeSheet03);
 
         /** END DATA **/
 
         /** VARIABLES GENERATION **/
 
-        // TOTAL ROWS COUNTER BY SHEET
-        List<Integer> rowsNumbersBySheet = new ArrayList<>();
-        for (List<List<Integer>> ratioListBySheet : ratioChart) {
-            int totalRowsNumber = 0;
-            for (List<Integer> ratioArray : ratioListBySheet) {
-                int currentArrayRowsNumber = 1;
-                for (int rowNumber : ratioArray) {
-                    currentArrayRowsNumber *= rowNumber;
-                }
-                totalRowsNumber += currentArrayRowsNumber;
-            }
-            rowsNumbersBySheet.add(totalRowsNumber);
-        }
+        // TOTAL SHEETS NUMBER
+        int sheetsNumber = treesList.size();
 
-        // TOTAL COLS COUNTER  BY SHEET
-        List<Integer> colsNumbersBySheet = new ArrayList<>();
-        for (List<List<Integer>> ratioListBySheet : ratioChart) {
-            int colNumber = 0;
-            for (List<Integer> ratioArray : ratioListBySheet) {
-                colNumber = ratioArray.size();
-            }
-            colsNumbersBySheet.add(colNumber);
-        }
+        // TOTAL ROWS COUNTER BY SHEET
+        List<Integer> rowsNumbersBySheet = countRowsBySheet(treesList);
+
+        // TOTAL COLS COUNTER BY SHEET
+        List<Integer> colsNumbersBySheet = countColsBySheet(treesList);
 
         // SHEETS TITLES GENERATION
-        int sheetsNumber = ratioChart.size(); // number of sheet by file
-        List<String> sheetsNames = new ArrayList<>();
-
-        for (int sheetIndex = 0; sheetIndex < sheetsNumber; sheetIndex++) {
-            sheetsNames.add("Sheet n°" + (sheetIndex + 1));
-        }
+        List<String> sheetsNames = generateSheetsTitles(sheetsNumber);
 
         // COLS TITLES GENERATION
-        List<List<String>> rowsTitles = new ArrayList<>();
-        for (int sheetIndex = 0; sheetIndex < sheetsNumber; sheetIndex++) {
+        List<List<String>> rowsTitles = generateColumnsTitles(sheetsNumber, colsNumbersBySheet);
 
-            List<String> titlesBySheet = new ArrayList<>();
-
-            for (int colIndex = 0; colIndex < colsNumbersBySheet.get(sheetIndex); colIndex++) {
-                titlesBySheet.add("Title " + (colIndex + 1) + " - Sheet " + (sheetIndex + 1));
-            }
-
-            rowsTitles.add(titlesBySheet);
-        }
-
-        /** END VARIABLES **/
+        /** END VARIABLES GENERATION **/
 
         /** PROCESS **/
         long startTime = System.currentTimeMillis();
@@ -108,7 +79,7 @@ public class JavaPoiDemoApplication {
         Excel_Init excelInit = new Excel_Init();
         Workbook excelFile = excelInit.excelInitialization(sheetsNumber, sheetsNames);
 
-        // BORDERS  + TITLES STYLING
+        // BORDERS + TITLES STYLING
         BordersGen bordersGen = new BordersGen();
         bordersGen.addBorder("bottom", 0, excelFile, colsNumbersBySheet);
         styleGeneratedRows += 1;
@@ -119,30 +90,89 @@ public class JavaPoiDemoApplication {
 
         // ROWS / COLS GENERATION / CELLS FILLING + INDIVIDUAL CELL STYLING
         CellsGen cellsGen = new CellsGen();
-        cellsGen.generateExcelCells(excelFile, colsNumbersBySheet, styleGeneratedRows, ratioChart);
+        cellsGen.generateExcelCells(excelFile, colsNumbersBySheet, styleGeneratedRows, treesList);
 
         // FILE PRODUCTION
         Excel_Producer excelProducer = new Excel_Producer();
         excelProducer.excelFileProduction(excelFile, fileName);
 
-        long endTime = System.currentTimeMillis();
+        long totalTime = System.currentTimeMillis() - startTime;
         /** END PROCESS **/
 
-        // COL COUNTER
+        printStatLogs(sheetsNumber, rowsNumbersBySheet, colsNumbersBySheet, totalTime);
+    }
+
+    private static List<Integer> countRowsBySheet(List<List<List<Integer>>> treesList) {
+        List<Integer> rowsNumbersBySheet = new ArrayList<>();
+
+        for (List<List<Integer>> dataTreeBySheet : treesList) {
+            int totalRowsNumber = 0;
+            for (List<Integer> ratioArray : dataTreeBySheet) {
+                int currentArrayRowsNumber = 1;
+                for (int rowNumber : ratioArray) {
+                    currentArrayRowsNumber *= rowNumber;
+                }
+                totalRowsNumber += currentArrayRowsNumber;
+            }
+            rowsNumbersBySheet.add(totalRowsNumber);
+        }
+        return rowsNumbersBySheet;
+    }
+
+    private static List<Integer> countColsBySheet(List<List<List<Integer>>> treesList) {
+        List<Integer> colsNumbersBySheet = new ArrayList<>();
+
+        for (List<List<Integer>> dataTreeBySheet : treesList) {
+            // DATA TREE BY SHEET LIST MUST HAVE THE SAME NUMBER OF ROWS → NO NEED TO ITERATE ON LIST
+            colsNumbersBySheet.add(dataTreeBySheet.get(0).size());
+        }
+        return colsNumbersBySheet;
+    }
+
+    private static List<String> generateSheetsTitles(int sheetsNumber) {
+        List<String> sheetsNames = new ArrayList<>();
+
+        for (int sheetIndex = 0; sheetIndex < sheetsNumber; sheetIndex++) {
+            sheetsNames.add("Sheet n°" + (sheetIndex + 1));
+        }
+        return sheetsNames;
+    }
+
+    private static List<List<String>> generateColumnsTitles(int sheetsNumber, List<Integer> colsNumbersBySheet) {
+        List<List<String>> rowsTitles = new ArrayList<>();
+
+        for (int sheetIndex = 0; sheetIndex < sheetsNumber; sheetIndex++) {
+            List<String> titlesBySheet = new ArrayList<>();
+
+            for (int colIndex = 0; colIndex < colsNumbersBySheet.get(sheetIndex); colIndex++) {
+                titlesBySheet.add("Title " + (colIndex + 1) + " - Sheet " + (sheetIndex + 1));
+            }
+            rowsTitles.add(titlesBySheet);
+        }
+        return rowsTitles;
+    }
+
+    private static int totalColsCounter(List<Integer> colsNumbersBySheet) {
         int totalColNumber = 0;
         for (Integer integer : colsNumbersBySheet) {
             totalColNumber += integer;
         }
+        return totalColNumber;
+    }
 
-        // ROW COUNTER
+    private static int totalRowsCounter(List<Integer> rowsNumbersBySheet) {
         int totalCellsNumber = 0;
         for (Integer integer : rowsNumbersBySheet) {
             totalCellsNumber += integer;
         }
-
-        System.out.println("\n");
-        System.out.println("Generation of " + sheetsNumber + " sheet(s), " + totalColNumber + " columns and " + totalCellsNumber + " rows is complete.");
-        System.out.println("Excel file created. It took " + (endTime - startTime) + " milliseconds.");
+        return totalCellsNumber;
     }
 
+    private static void printStatLogs(int sheetsNumber, List<Integer> rowsNumbersBySheet, List<Integer> colsNumbersBySheet, long timer) {
+        int totalColNumber = totalColsCounter(colsNumbersBySheet);
+        int totalRowsNumber = totalRowsCounter(rowsNumbersBySheet);
+
+        System.out.println("Generation of " + sheetsNumber + " sheet(s), " + totalColNumber + " columns and " + totalRowsNumber + " rows is complete.");
+        System.out.println("Excel file created. It took " + timer + " milliseconds.");
+    }
 }
