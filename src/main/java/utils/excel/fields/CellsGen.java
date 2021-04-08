@@ -32,12 +32,12 @@ public class CellsGen {
                 totalCellCounter.add(i, 0);
             }
 
-            //RATIO LIST ITERATOR
+            //DATA TREE ITERATOR
             for (List<Integer> treeNode : currentDataTree) {
                 int cellCounter = 0;
 
                 // COL ITERATOR
-                for (int colIndex = 0; colIndex < maxColNumber; colIndex++) {
+                for (int colIndex = 0; colIndex < treeNode.size(); colIndex++) {
 
                     int cellsNbrToInsert = cellsToInsertCounter(treeNode, colIndex);
                     int currentTotalCellCounter = totalCellCounter.get(colIndex);
@@ -61,7 +61,7 @@ public class CellsGen {
                         currentCell.setCellStyle(cellStyle);
 
                         // IF NOT LAST COL → MERGE CELLS
-                        if (colIndex != (maxColNumber - 1)) {
+                        if (colIndex != (treeNode.size() - 1)) {
                             int mergeEndIndex = this.stackSplitter(treeNode, colIndex);
 
                             currentSheet.addMergedRegion(new CellRangeAddress(

@@ -25,9 +25,11 @@ public class JavaPoiDemoApplication {
         // FILE NAME
         String fileName = "GeneratedExcelFile";
 
+        /* If tree nodes arrays in dataTree are not of the same length → works but not as awaited */
+
         // DATA TREE SHEET 1
-        List<List<Integer>> dataTreeSheet01 = new ArrayList<>();
-        dataTreeSheet01.add(Arrays.asList(1, 2, 4, 5));
+        List<List<Integer>> dataTreeSheet01 = new ArrayList<>(); // TREE
+        dataTreeSheet01.add(Arrays.asList(1, 2, 4, 5)); // TREE NODE
         dataTreeSheet01.add(Arrays.asList(1, 2, 4, 5));
         dataTreeSheet01.add(Arrays.asList(1, 2, 4, 5));
 
@@ -122,9 +124,14 @@ public class JavaPoiDemoApplication {
     private static List<Integer> countColsBySheet(List<List<List<Integer>>> treesList) {
         List<Integer> colsNumbersBySheet = new ArrayList<>();
 
-        for (List<List<Integer>> dataTreeBySheet : treesList) {
-            // DATA TREE BY SHEET LIST MUST HAVE THE SAME NUMBER OF ROWS → NO NEED TO ITERATE ON LIST
-            colsNumbersBySheet.add(dataTreeBySheet.get(0).size());
+        for (List<List<Integer>> dataTreesBySheet : treesList) {
+            int maxColNumber = 0;
+            for (List<Integer> dataTree : dataTreesBySheet) {
+                if (dataTree.size() > maxColNumber) {
+                    maxColNumber = dataTree.size();
+                }
+            }
+            colsNumbersBySheet.add(maxColNumber);
         }
         return colsNumbersBySheet;
     }
